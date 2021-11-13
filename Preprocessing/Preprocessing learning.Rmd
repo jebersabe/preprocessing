@@ -1,0 +1,162 @@
+---
+title: "Data Preprocessing Learning"
+author: "Jake Bersabe"
+date: "13/11/2021"
+output: html_document
+---
+
+### Import data
+Train/Test Split must be done prior to data preprocessing.  
+First let us import some libraries:  
+```{r}
+library(dplyr)
+library(tidyr)
+library(skimr)
+```
+
+```{r}
+starwars %>% View()
+skim(starwars)
+```
+
+```{r}
+data <- starwars %>% 
+  select(height, mass, gender)
+data
+```
+
+### Split data  
+```{r}
+library(rsample)
+
+data_split <- initial_split(data)
+
+data_train <- training(data_split)
+data_test <- testing(data_split)
+```
+
+
+### BMI column  
+```{r}
+data_train <- data_train %>% 
+  mutate(height = height/100,
+         BMI = mass / (height^2))
+data_train
+```
+
+```{r}
+colSums(is.na(data_train))
+```
+
+### Dealing with missing values  
+```{r}
+MedianMassMasculine <- median(data_train[data_train$gender == "masculine", ]$mass, na.rm = T)
+MedianMassFem <- median(data_train[data_train$gender == "feminine", ]$mass, na.rm = T)
+
+MeanHeightMas <- mean(data_train[data_train$gender == "masculine", ]$height, na.rm = T)
+MeanHeightFem <- mean(data_train[data_train$gender == "feminine", ]$height, na.rm = T)
+
+data_tr_imputed <- data_train %>% 
+  drop_na(gender) %>% 
+  mutate(mass = if_else(is.na(mass) & gender == "masculine", 
+                        MedianMassMasculine,
+                        mass),
+         mass = if_else(is.na(mass) & gender == "feminine", 
+                        MedianMassFem,
+                        mass),
+         height = if_else(is.na(height) & gender == "masculine", 
+                        MeanHeightMas,
+                        height),
+         height = if_else(is.na(height) & gender == "feminine", 
+                        MeanHeightFem,
+                        height),
+         BMI = mass / (height^2)) 
+data_tr_imputed
+```
+
+
+
+
+
+### Encoding Categorical Data
+```{r}
+iris
+skim(iris)
+```
+
+```{r}
+iris %>% 
+  mutate(Setosa = if_else(Species == "setosa", 1, 0),
+         Versicolor = if_else(Species == "versicolor", 1, 0)) %>% 
+  select(-Species)
+```
+
+```{r}
+data_tr_imputed_encoded <- data_tr_imputed %>% 
+  mutate(gender = if_else(gender == "masculine", 1, 0))
+data_tr_imputed_encoded
+```
+
+### Scaling
+```{r}
+normalize <- function(feature){
+  (feature - mean(feature))/sd(feature)
+}
+```
+
+
+```{r}
+data_tr_imputed_encoded_normalized <- data_tr_imputed_encoded %>% 
+  mutate_all(normalize)
+data_tr_imputed_encoded_normalized
+```
+
+
+
+
+### Complete Preprocessing Pipeline
+
+```{r}
+data_tr_piped <- data_train %>% 
+  mutate(height = height/100) %>% 
+  drop_na(gender) %>% 
+  mutate(mass = if_else(is.na(mass) & gender == "masculine", 
+                        MedianMassMasculine,
+                        mass),
+         mass = if_else(is.na(mass) & gender == "feminine", 
+                        MedianMassFem,
+                        mass),
+         height = if_else(is.na(height) & gender == "masculine", 
+                        MeanHeightMas,
+                        height),
+         height = if_else(is.na(height) & gender == "feminine", 
+                        MeanHeightFem,
+                        height)) %>% 
+  mutate(BMI = mass / (height^2)) %>% 
+  mutate(gender = if_else(gender == "masculine", 1, 0)) %>% 
+  mutate_all(normalize)
+data_tr_piped
+```
+Compare:  
+```{r}
+waldo::compare(data_tr_imputed_encoded_normalized, data_tr_piped)
+```
+
+### Recipes   
+```{r}
+library(recipes)
+
+data_recipe <- data_train %>% 
+  recipe() %>% 
+    step_mutate(height = height/100) %>% 
+    step_naomit(gender) %>% 
+    step_impute_median(height, mass) %>% 
+    step_mutate(BMI = mass / (height^2)) %>% 
+    step_dummy(gender) %>% 
+    step_normalize(everything()) %>% 
+  prep()
+
+data_recipe %>% juice()
+```
+
+
