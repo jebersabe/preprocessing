@@ -1,2 +1,2 @@
 # preprocessing
- Data preprocessing - loan eligibility
+ Data preprocessing of the loan eligibility prediction data set using dplyr
