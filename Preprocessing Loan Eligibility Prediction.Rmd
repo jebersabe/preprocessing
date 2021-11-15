@@ -1,0 +1,166 @@
+---
+title: "Preprocessing Loan Eligibility Prediction"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+author: "Jake Bersabe"
+date: "14/11/2021"
+output: html_document
+---
+
+#### Import the data set  
+
+```{r message=FALSE}
+library(dplyr)
+data <- readr::read_csv("train.csv")
+glimpse(data)
+```
+
+```{r message=FALSE}
+library(skimr)
+skim(data)
+```  
+
+
+### Split data set  
+```{r}
+library(rsample)
+
+data_xplit <- initial_split(data)
+
+data_train <- training(data_xplit)
+data_test <- testing(data_xplit)
+
+```
+
+
+
+## Preprocessing 1: Step by step
+### 1. Imputation, deselect LoanID   
+```{r message=FALSE}
+library(mice)
+
+data_train1 <- data_train %>% 
+  mutate(Gender = factor(Gender),
+         Married = factor(Married),
+         Education = factor(Education),
+         Self_Employed = factor(Self_Employed),
+         Property_Area = factor(Property_Area)) %>% 
+  select(-Loan_ID) %>% 
+  mice(m=2, maxit = 2, method = 'cart', seed = 500) %>% 
+  complete(1)
+
+colSums(is.na(data_train1))
+```
+
+### 2. Feature engineering:  Add CombinedIncome column, Deselect applicant and coapplicant income, add MonthlyPayment column, PaymentIncomeRatio column 
+
+First, create a function that will compute monthly payment.  
+```{r}
+monthly_payment <- function(loan_amount, loan_amount_term){
+  r <- 0.005
+  monthly_payment <- (loan_amount/(((1+r)^loan_amount_term)-1))*(((1+r)^loan_amount_term)*r)
+  return(monthly_payment)
+}
+```
+
+
+
+```{r}
+data_train2 <- data_train1 %>% 
+  mutate(LoanAmount = LoanAmount*1000,
+         CombinedIncome = ApplicantIncome + CoapplicantIncome) %>% 
+  select(-ApplicantIncome, -CoapplicantIncome) %>% 
+  mutate(MonthlyPayment = monthly_payment(LoanAmount, Loan_Amount_Term),
+         PaymentIncomeRatio = MonthlyPayment/CombinedIncome)
+glimpse(data_train2)
+```
+
+
+
+
+### 3. Dummy Coding  
+```{r}
+data_train3 <- data_train2 %>% 
+  mutate(Gender = if_else(Gender == "Male", 1, 0),
+         Married = if_else(Married == "Yes", 1, 0),
+         Education = if_else(Education == "Graduate", 1, 0),
+         Self_Employed = if_else(Self_Employed == "Yes", 1, 0),
+         Credit_History = as.numeric(as.character(Credit_History)),
+         Property_Area_Semi = if_else(Property_Area == "Semiurban", 1, 0),
+         Property_Area_Rural = if_else(Property_Area == "Rural", 1, 0),
+         Property_Area_Urban = if_else(Property_Area == "Urban", 1, 0),
+         Loan_Status = if_else(Loan_Status == "Y", 1, 0)) %>% 
+  select(-Property_Area)
+data_train3 %>% glimpse()
+```
+
+
+### 4. Normalization  
+```{r}
+data_train4 <- scale(data_train3) %>% as_tibble()
+glimpse(data_train4)
+```
+
+```{r}
+library(corrplot)
+data_train4 %>% 
+  select(-LoanAmount, -Loan_Amount_Term, -CombinedIncome, -MonthlyPayment) %>% 
+  cor() %>% 
+  corrplot(type = "lower")
+```
+
+
+## Preprocessing 2: Pipeline  
+```{r}
+# Library for imputation
+library(mice) 
+
+# Function to add monthly income column
+monthly_payment <- function(loan_amount, loan_amount_term){
+  r <- 0.005
+  monthly_payment <- (loan_amount/(((1+r)^loan_amount_term)-1))*(((1+r)^loan_amount_term)*r)
+  return(monthly_payment)
+} 
+
+# Pre-processing pipeline 
+
+data_train_pipelined <- data_train %>%
+  mutate(Gender = factor(Gender),
+         Married = factor(Married),
+         Education = factor(Education),
+         Self_Employed = factor(Self_Employed),
+         Property_Area = factor(Property_Area)) %>% 
+  select(-Loan_ID) %>% 
+  mice(m=2, maxit = 2, method = 'cart', seed = 500) %>% 
+  complete(1) %>% 
+  mutate(LoanAmount = LoanAmount*1000,
+         CombinedIncome = ApplicantIncome + CoapplicantIncome) %>% 
+  select(-ApplicantIncome, -CoapplicantIncome) %>% 
+  mutate(MonthlyPayment = monthly_payment(LoanAmount, Loan_Amount_Term),
+         PaymentIncomeRatio = MonthlyPayment/CombinedIncome) %>% 
+  mutate(Gender = if_else(Gender == "Male", 1, 0),
+         Married = if_else(Married == "Yes", 1, 0),
+         Education = if_else(Education == "Graduate", 1, 0),
+         Self_Employed = if_else(Self_Employed == "Yes", 1, 0),
+         Credit_History = as.numeric(as.character(Credit_History)),
+         Property_Area_Semi = if_else(Property_Area == "Semiurban", 1, 0),
+         Property_Area_Rural = if_else(Property_Area == "Rural", 1, 0),
+         Property_Area_Urban = if_else(Property_Area == "Urban", 1, 0),
+         Loan_Status = if_else(Loan_Status == "Y", 1, 0)) %>% 
+  select(-Property_Area) %>% 
+  scale() %>% 
+  as_tibble()
+  
+glimpse(data_train_pipelined)
+skim(data_train_pipelined)
+```
+
+
+## Compare Preprocessing 1 and Preprocessing 2  
+```{r}
+waldo::compare(data_train_pipelined, data_train4)
+```
+

@@ -6,13 +6,13 @@ output: html_document
 ---
 
 ### Import the data set  
-```{r}
+```{r message=FALSE}
 library(dplyr)
 data <- readr::read_csv("train.csv")
 glimpse(data)
 ```
 
-```{r}
+```{r message=FALSE}
 library(skimr)
 skim(data)
 ```
@@ -29,7 +29,7 @@ df_train <- training(data_split)
 df_test <- testing(data_split)
 ```
 
-### 1.  LoanAmount x 1000, CombinedIncome, Deselect(LoanID, ApplicantIncome, Coapplicant)   
+### 1. LoanAmount x 1000, CombinedIncome, Deselect(LoanID, ApplicantIncome, Coapplicant)   
 ```{r}
 df_train1 <- df_train %>% 
   mutate(LoanAmount = LoanAmount*1000,
@@ -37,11 +37,10 @@ df_train1 <- df_train %>%
   select(-Loan_ID, -ApplicantIncome, -CoapplicantIncome)
 df_train1 %>% glimpse()
 ```
-imputation <- mice(train, m=2, maxit = 2, method = 'cart', seed = 500)
-train <- complete(imputation,2)
+
 
 ### 2. Set as factor, Impute   
-```{r}
+```{r message=FALSE}
 df_train2 <- df_train1 %>% 
   mutate(Gender = factor(Gender),
          Married = factor(Married),
@@ -50,8 +49,10 @@ df_train2 <- df_train1 %>%
          Credit_History = factor(Credit_History),
          Property_Area = factor(Property_Area))
 
-miceMod <- mice::mice(df_train2, m=2, maxit = 2, method = 'cart', seed = 500)
-df_train2 <- mice::complete(miceMod, 1)
+library(mice)
+
+miceMod <- mice(df_train2, m=2, maxit = 2, method = 'cart', seed = 500)
+df_train2 <- complete(miceMod, 1)
 df_train2 %>% glimpse()
 ```
 
@@ -78,3 +79,40 @@ df_train4 %>% glimpse()
 
 
 ## Part 2: Complete Pipeline
+
+```{r message=FALSE}
+df_train_pipeline <- df_train %>% 
+  mutate(LoanAmount = LoanAmount*1000,
+         CombinedIncome = ApplicantIncome + CoapplicantIncome) %>% 
+  select(-Loan_ID, -ApplicantIncome, -CoapplicantIncome) %>% 
+  mutate(Gender = factor(Gender),
+         Married = factor(Married),
+         Education = factor(Education),
+         Self_Employed = factor(Self_Employed),
+         Credit_History = factor(Credit_History),
+         Property_Area = factor(Property_Area)) %>% 
+  mice(m=2, maxit = 2, method = 'cart', seed = 500) %>% 
+  complete(1) %>% 
+  mutate(Gender = if_else(Gender == "Male", 1, 0),
+         Married = if_else(Married == "Yes", 1, 0),
+         Education = if_else(Education == "Graduate", 1, 0),
+         Self_Employed = if_else(Self_Employed == "Yes", 1, 0),
+         Credit_History = as.numeric(as.character(Credit_History)),
+         Property_Area_Semi = if_else(Property_Area == "Semiurban", 1, 0),
+         Property_Area_Rural = if_else(Property_Area == "Rural", 1, 0),
+         Loan_Status = if_else(Loan_Status == "Y", 1, 0)) %>% 
+  select(-Property_Area) %>% 
+  scale() %>% 
+  as_tibble()
+
+df_train_pipeline %>% glimpse()  
+```
+
+Check for differences:  
+```{r message=FALSE}
+waldo::compare(df_train4, df_train_pipeline)
+```
+
+
+
+

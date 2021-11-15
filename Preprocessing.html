@@ -173,25 +173,9 @@ pre code {
 
 <div id="import-the-data-set" class="section level3">
 <h3>Import the data set</h3>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>data &lt;- readr::read_csv(&quot;train.csv&quot;)</code></pre>
-<pre><code>## Rows: 614 Columns: 13</code></pre>
-<pre><code>## -- Column specification --------------------------------------------------------
-## Delimiter: &quot;,&quot;
-## chr (7): Loan_ID, Gender, Married, Education, Self_Employed, Property_Area, ...
-## dbl (6): Dependents, ApplicantIncome, CoapplicantIncome, LoanAmount, Loan_Am...</code></pre>
-<pre><code>## 
-## i Use `spec()` to retrieve the full column specification for this data.
-## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>glimpse(data)</code></pre>
+<pre class="r"><code>library(dplyr)
+data &lt;- readr::read_csv(&quot;train.csv&quot;)
+glimpse(data)</code></pre>
 <pre><code>## Rows: 614
 ## Columns: 13
 ## $ Loan_ID           &lt;chr&gt; &quot;LP001002&quot;, &quot;LP001003&quot;, &quot;LP001005&quot;, &quot;LP001006&quot;, &quot;LP0~
@@ -456,18 +440,17 @@ df_test &lt;- testing(data_split)</code></pre>
 df_train1 %&gt;% glimpse()</code></pre>
 <pre><code>## Rows: 460
 ## Columns: 11
-## $ Gender           &lt;chr&gt; &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Male&quot;,~
-## $ Married          &lt;chr&gt; &quot;Yes&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;,~
-## $ Dependents       &lt;dbl&gt; 0, 1, 0, 0, 0, 1, 3, 0, 1, 1, 2, 3, 0, 0, 0, 0, 2, 2,~
-## $ Education        &lt;chr&gt; &quot;Graduate&quot;, &quot;Graduate&quot;, &quot;Graduate&quot;, &quot;Graduate&quot;, &quot;Grad~
-## $ Self_Employed    &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No~
-## $ LoanAmount       &lt;dbl&gt; 112000, 158000, 104000, 113000, 100000, 90000, 130000~
-## $ Loan_Amount_Term &lt;dbl&gt; 360, 360, 360, 480, 360, 360, 360, 360, 360, 360, 360~
-## $ Credit_History   &lt;dbl&gt; 1, 1, 1, 1, 1, 1, NA, 1, 1, 1, 1, 1, 1, NA, 1, 0, 1, ~
-## $ Property_Area    &lt;chr&gt; &quot;Rural&quot;, &quot;Urban&quot;, &quot;Urban&quot;, &quot;Rural&quot;, &quot;Semiurban&quot;, &quot;Sem~
-## $ Loan_Status      &lt;chr&gt; &quot;N&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;~
-## $ CombinedIncome   &lt;dbl&gt; 4583, 6583, 3819, 4328, 6816, 5100, 5499, 6822, 5783,~</code></pre>
-<p>imputation &lt;- mice(train, m=2, maxit = 2, method = ‘cart’, seed = 500) train &lt;- complete(imputation,2)</p>
+## $ Gender           &lt;chr&gt; &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Male&quot;, &quot;Male~
+## $ Married          &lt;chr&gt; &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;Yes&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;~
+## $ Dependents       &lt;dbl&gt; 0, 3, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 2,~
+## $ Education        &lt;chr&gt; &quot;Graduate&quot;, &quot;Not Graduate&quot;, &quot;Graduate&quot;, &quot;Not Graduate~
+## $ Self_Employed    &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, NA, &quot;No&quot;, ~
+## $ LoanAmount       &lt;dbl&gt; 100000, 125000, 176000, 94000, 131000, NA, 67000, 110~
+## $ Loan_Amount_Term &lt;dbl&gt; 360, 60, 360, 360, 360, 360, 360, 360, 360, 360, 300,~
+## $ Credit_History   &lt;dbl&gt; 1, 1, 1, 1, 1, 0, NA, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1~
+## $ Property_Area    &lt;chr&gt; &quot;Urban&quot;, &quot;Urban&quot;, &quot;Urban&quot;, &quot;Semiurban&quot;, &quot;Semiurban&quot;, ~
+## $ Loan_Status      &lt;chr&gt; &quot;Y&quot;, &quot;Y&quot;, &quot;N&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;N&quot;, &quot;N&quot;, &quot;Y&quot;, &quot;N&quot;, &quot;Y&quot;, &quot;N&quot;~
+## $ CombinedIncome   &lt;dbl&gt; 3539, 7100, 8500, 3981, 5858, 6146, 6979, 4223, 7933,~</code></pre>
 </div>
 <div id="set-as-factor-impute" class="section level3">
 <h3>2. Set as factor, Impute</h3>
@@ -479,7 +462,9 @@ df_train1 %&gt;% glimpse()</code></pre>
          Credit_History = factor(Credit_History),
          Property_Area = factor(Property_Area))
 
-miceMod &lt;- mice::mice(df_train2, m=2, maxit = 2, method = &#39;cart&#39;, seed = 500)</code></pre>
+library(mice)
+
+miceMod &lt;- mice(df_train2, m=2, maxit = 2, method = &#39;cart&#39;, seed = 500)</code></pre>
 <pre><code>## 
 ##  iter imp variable
 ##   1   1  Gender  Married  Dependents  Self_Employed  LoanAmount  Loan_Amount_Term  Credit_History
@@ -487,21 +472,21 @@ miceMod &lt;- mice::mice(df_train2, m=2, maxit = 2, method = &#39;cart&#39;, see
 ##   2   1  Gender  Married  Dependents  Self_Employed  LoanAmount  Loan_Amount_Term  Credit_History
 ##   2   2  Gender  Married  Dependents  Self_Employed  LoanAmount  Loan_Amount_Term  Credit_History</code></pre>
 <pre><code>## Warning: Number of logged events: 1</code></pre>
-<pre class="r"><code>df_train2 &lt;- mice::complete(miceMod, 1)
+<pre class="r"><code>df_train2 &lt;- complete(miceMod, 1)
 df_train2 %&gt;% glimpse()</code></pre>
 <pre><code>## Rows: 460
 ## Columns: 11
-## $ Gender           &lt;fct&gt; Female, Male, Male, Female, Female, Male, Male, Male,~
-## $ Married          &lt;fct&gt; Yes, Yes, Yes, No, Yes, Yes, Yes, No, Yes, Yes, No, Y~
-## $ Dependents       &lt;dbl&gt; 0, 1, 0, 0, 0, 1, 3, 0, 1, 1, 2, 3, 0, 0, 0, 0, 2, 2,~
-## $ Education        &lt;fct&gt; Graduate, Graduate, Graduate, Graduate, Graduate, Not~
-## $ Self_Employed    &lt;fct&gt; No, No, No, No, No, No, Yes, Yes, No, No, No, Yes, No~
-## $ LoanAmount       &lt;dbl&gt; 112000, 158000, 104000, 113000, 100000, 90000, 130000~
-## $ Loan_Amount_Term &lt;dbl&gt; 360, 360, 360, 480, 360, 360, 360, 360, 360, 360, 360~
-## $ Credit_History   &lt;fct&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1,~
-## $ Property_Area    &lt;fct&gt; Rural, Urban, Urban, Rural, Semiurban, Semiurban, Sem~
-## $ Loan_Status      &lt;chr&gt; &quot;N&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;Y&quot;~
-## $ CombinedIncome   &lt;dbl&gt; 4583, 6583, 3819, 4328, 6816, 5100, 5499, 6822, 5783,~</code></pre>
+## $ Gender           &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Female, Mal~
+## $ Married          &lt;fct&gt; Yes, Yes, No, No, Yes, Yes, No, No, Yes, Yes, Yes, No~
+## $ Dependents       &lt;dbl&gt; 0, 3, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 2,~
+## $ Education        &lt;fct&gt; Graduate, Not Graduate, Graduate, Not Graduate, Gradu~
+## $ Self_Employed    &lt;fct&gt; No, Yes, No, No, No, No, No, No, No, No, Yes, No, No,~
+## $ LoanAmount       &lt;dbl&gt; 100000, 125000, 176000, 94000, 131000, 137000, 67000,~
+## $ Loan_Amount_Term &lt;dbl&gt; 360, 60, 360, 360, 360, 360, 360, 360, 360, 360, 300,~
+## $ Credit_History   &lt;fct&gt; 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1,~
+## $ Property_Area    &lt;fct&gt; Urban, Urban, Urban, Semiurban, Semiurban, Urban, Rur~
+## $ Loan_Status      &lt;chr&gt; &quot;Y&quot;, &quot;Y&quot;, &quot;N&quot;, &quot;Y&quot;, &quot;Y&quot;, &quot;N&quot;, &quot;N&quot;, &quot;Y&quot;, &quot;N&quot;, &quot;Y&quot;, &quot;N&quot;~
+## $ CombinedIncome   &lt;dbl&gt; 3539, 7100, 8500, 3981, 5858, 6146, 6979, 4223, 7933,~</code></pre>
 </div>
 <div id="dummy-code" class="section level3">
 <h3>3. Dummy Code</h3>
@@ -518,18 +503,18 @@ df_train2 %&gt;% glimpse()</code></pre>
 df_train3 %&gt;% glimpse()</code></pre>
 <pre><code>## Rows: 460
 ## Columns: 12
-## $ Gender              &lt;dbl&gt; 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,~
-## $ Married             &lt;dbl&gt; 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1,~
-## $ Dependents          &lt;dbl&gt; 0, 1, 0, 0, 0, 1, 3, 0, 1, 1, 2, 3, 0, 0, 0, 0, 2,~
-## $ Education           &lt;dbl&gt; 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1,~
-## $ Self_Employed       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1,~
-## $ LoanAmount          &lt;dbl&gt; 112000, 158000, 104000, 113000, 100000, 90000, 130~
-## $ Loan_Amount_Term    &lt;dbl&gt; 360, 360, 360, 480, 360, 360, 360, 360, 360, 360, ~
-## $ Credit_History      &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1,~
-## $ Loan_Status         &lt;dbl&gt; 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1,~
-## $ CombinedIncome      &lt;dbl&gt; 4583, 6583, 3819, 4328, 6816, 5100, 5499, 6822, 57~
-## $ Property_Area_Semi  &lt;dbl&gt; 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0,~
-## $ Property_Area_Rural &lt;dbl&gt; 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1,~</code></pre>
+## $ Gender              &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1,~
+## $ Married             &lt;dbl&gt; 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1,~
+## $ Dependents          &lt;dbl&gt; 0, 3, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1,~
+## $ Education           &lt;dbl&gt; 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,~
+## $ Self_Employed       &lt;dbl&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,~
+## $ LoanAmount          &lt;dbl&gt; 100000, 125000, 176000, 94000, 131000, 137000, 670~
+## $ Loan_Amount_Term    &lt;dbl&gt; 360, 60, 360, 360, 360, 360, 360, 360, 360, 360, 3~
+## $ Credit_History      &lt;dbl&gt; 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1,~
+## $ Loan_Status         &lt;dbl&gt; 1, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 1,~
+## $ CombinedIncome      &lt;dbl&gt; 3539, 7100, 8500, 3981, 5858, 6146, 6979, 4223, 79~
+## $ Property_Area_Semi  &lt;dbl&gt; 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0,~
+## $ Property_Area_Rural &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,~</code></pre>
 </div>
 <div id="normalize" class="section level3">
 <h3>4. Normalize</h3>
@@ -537,22 +522,55 @@ df_train3 %&gt;% glimpse()</code></pre>
 df_train4 %&gt;% glimpse()</code></pre>
 <pre><code>## Rows: 460
 ## Columns: 12
-## $ Gender              &lt;dbl&gt; -2.0683414, 0.4824281, 0.4824281, -2.0683414, -2.0~
-## $ Married             &lt;dbl&gt; 0.7295025, 0.7295025, 0.7295025, -1.3678172, 0.729~
-## $ Dependents          &lt;dbl&gt; -0.7472240, 0.2264957, -0.7472240, -0.7472240, -0.~
-## $ Education           &lt;dbl&gt; 0.5062334, 0.5062334, 0.5062334, 0.5062334, 0.5062~
-## $ Self_Employed       &lt;dbl&gt; -0.4015779, -0.4015779, -0.4015779, -0.4015779, -0~
-## $ LoanAmount          &lt;dbl&gt; -0.37863432, 0.19516087, -0.47842479, -0.36616051,~
-## $ Loan_Amount_Term    &lt;dbl&gt; 0.2655855, 0.2655855, 0.2655855, 2.0674931, 0.2655~
+## $ Gender              &lt;dbl&gt; 0.4824281, 0.4824281, 0.4824281, 0.4824281, 0.4824~
+## $ Married             &lt;dbl&gt; 0.7225244, 0.7225244, -1.3810276, -1.3810276, 0.72~
+## $ Dependents          &lt;dbl&gt; -0.7542699, 2.1613952, -0.7542699, 0.2176185, -0.7~
+## $ Education           &lt;dbl&gt; 0.5298353, -1.8832760, 0.5298353, -1.8832760, 0.52~
+## $ Self_Employed       &lt;dbl&gt; -0.405215, 2.462461, -0.405215, -0.405215, -0.4052~
+## $ LoanAmount          &lt;dbl&gt; -0.51679356, -0.22799790, 0.36114525, -0.58610452,~
+## $ Loan_Amount_Term    &lt;dbl&gt; 0.2903565, -4.3797131, 0.2903565, 0.2903565, 0.290~
 ## $ Credit_History      &lt;dbl&gt; 0.4583325, 0.4583325, 0.4583325, 0.4583325, 0.4583~
-## $ Loan_Status         &lt;dbl&gt; -1.4872673, 0.6709124, 0.6709124, 0.6709124, 0.670~
-## $ CombinedIncome      &lt;dbl&gt; -0.35425666, -0.04719768, -0.47155319, -0.39340668~
-## $ Property_Area_Semi  &lt;dbl&gt; -0.7936205, -0.7936205, -0.7936205, -0.7936205, 1.~
-## $ Property_Area_Rural &lt;dbl&gt; 1.5337988, -0.6505586, -0.6505586, 1.5337988, -0.6~</code></pre>
+## $ Loan_Status         &lt;dbl&gt; 0.7017362, 0.7017362, -1.4219391, 0.7017362, 0.701~
+## $ CombinedIncome      &lt;dbl&gt; -0.559770493, 0.023031980, 0.252159602, -0.4874316~
+## $ Property_Area_Semi  &lt;dbl&gt; -0.7827517, -0.7827517, -0.7827517, 1.2747671, 1.2~
+## $ Property_Area_Rural &lt;dbl&gt; -0.6641125, -0.6641125, -0.6641125, -0.6641125, -0~</code></pre>
 </div>
 </div>
 <div id="part-2-complete-pipeline" class="section level2">
 <h2>Part 2: Complete Pipeline</h2>
+<pre class="r"><code>df_train_pipeline &lt;- df_train %&gt;% 
+  mutate(LoanAmount = LoanAmount*1000,
+         CombinedIncome = ApplicantIncome + CoapplicantIncome) %&gt;% 
+  select(-Loan_ID, -ApplicantIncome, -CoapplicantIncome) %&gt;% 
+  mutate(Gender = factor(Gender),
+         Married = factor(Married),
+         Education = factor(Education),
+         Self_Employed = factor(Self_Employed),
+         Credit_History = factor(Credit_History),
+         Property_Area = factor(Property_Area)) %&gt;% 
+  mice(m=2, maxit = 2, method = &#39;cart&#39;, seed = 500) %&gt;% 
+  complete(1) %&gt;% 
+  mutate(Gender = if_else(Gender == &quot;Male&quot;, 1, 0),
+         Married = if_else(Married == &quot;Yes&quot;, 1, 0),
+         Education = if_else(Education == &quot;Graduate&quot;, 1, 0),
+         Self_Employed = if_else(Self_Employed == &quot;Yes&quot;, 1, 0),
+         Credit_History = as.numeric(as.character(Credit_History)),
+         Property_Area_Semi = if_else(Property_Area == &quot;Semiurban&quot;, 1, 0),
+         Property_Area_Rural = if_else(Property_Area == &quot;Rural&quot;, 1, 0),
+         Loan_Status = if_else(Loan_Status == &quot;Y&quot;, 1, 0)) %&gt;% 
+  select(-Property_Area) %&gt;% 
+  scale() %&gt;% 
+  as_tibble()</code></pre>
+<pre><code>## 
+##  iter imp variable
+##   1   1  Gender  Married  Dependents  Self_Employed  LoanAmount  Loan_Amount_Term  Credit_History
+##   1   2  Gender  Married  Dependents  Self_Employed  LoanAmount  Loan_Amount_Term  Credit_History
+##   2   1  Gender  Married  Dependents  Self_Employed  LoanAmount  Loan_Amount_Term  Credit_History
+##   2   2  Gender  Married  Dependents  Self_Employed  LoanAmount  Loan_Amount_Term  Credit_History</code></pre>
+<pre><code>## Warning: Number of logged events: 1</code></pre>
+<p>Check for differences:</p>
+<pre class="r"><code>waldo::compare(df_train4, df_train_pipeline)</code></pre>
+<pre><code>## v No differences</code></pre>
 </div>
 
 
