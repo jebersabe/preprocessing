@@ -28,7 +28,7 @@ skim(data)
 ```{r}
 library(rsample)
 
-data_xplit <- initial_split(data)
+data_xplit <- initial_split(data, strata = Loan_Status)
 
 data_train <- training(data_xplit)
 data_test <- testing(data_xplit)
