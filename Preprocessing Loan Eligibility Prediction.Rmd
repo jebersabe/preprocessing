@@ -164,11 +164,10 @@ data_train_pipelined <- data_train %>%
   as_tibble()
   
 glimpse(data_train_pipelined)
-skim(data_train_pipelined)
 ```
 
 
-## Compare Preprocessing 1 and Preprocessing 2  
+## Compare for Difference
 ```{r}
 waldo::compare(data_train_pipelined, data_train4)
 ```
