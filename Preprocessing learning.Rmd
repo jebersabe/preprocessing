@@ -5,6 +5,11 @@ date: "13/11/2021"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = F, warning = F)
+```
+
+
 ### Import data
 Train/Test Split must be done prior to data preprocessing.  
 First let us import some libraries:  
@@ -12,23 +17,24 @@ First let us import some libraries:
 library(dplyr)
 library(tidyr)
 library(skimr)
+library(printr)
 ```
 
 ```{r}
-starwars %>% View()
+starwars %>% head()
 skim(starwars)
 ```
 
 ```{r}
 data <- starwars %>% 
   select(height, mass, gender)
-data
+data %>% head(15)
 ```
 
 ### Split data  
 ```{r}
 library(rsample)
-
+set.seed(123)
 data_split <- initial_split(data)
 
 data_train <- training(data_split)
@@ -38,25 +44,25 @@ data_test <- testing(data_split)
 
 ### BMI column  
 ```{r}
-data_train <- data_train %>% 
+data_train1 <- data_train %>% 
   mutate(height = height/100,
          BMI = mass / (height^2))
-data_train
+data_train1 %>% head(15)
 ```
 
 ```{r}
-colSums(is.na(data_train))
+colSums(is.na(data_train1))
 ```
 
 ### Dealing with missing values  
 ```{r}
-MedianMassMasculine <- median(data_train[data_train$gender == "masculine", ]$mass, na.rm = T)
-MedianMassFem <- median(data_train[data_train$gender == "feminine", ]$mass, na.rm = T)
+MedianMassMasculine <- median(data_train1[data_train1$gender == "masculine", ]$mass, na.rm = T)
+MedianMassFem <- median(data_train1[data_train1$gender == "feminine", ]$mass, na.rm = T)
 
-MeanHeightMas <- mean(data_train[data_train$gender == "masculine", ]$height, na.rm = T)
-MeanHeightFem <- mean(data_train[data_train$gender == "feminine", ]$height, na.rm = T)
+MeanHeightMas <- mean(data_train1[data_train1$gender == "masculine", ]$height, na.rm = T)
+MeanHeightFem <- mean(data_train[data_train1$gender == "feminine", ]$height, na.rm = T)
 
-data_tr_imputed <- data_train %>% 
+data_tr_imputed <- data_train1 %>% 
   drop_na(gender) %>% 
   mutate(mass = if_else(is.na(mass) & gender == "masculine", 
                         MedianMassMasculine,
@@ -71,7 +77,7 @@ data_tr_imputed <- data_train %>%
                         MeanHeightFem,
                         height),
          BMI = mass / (height^2)) 
-data_tr_imputed
+data_tr_imputed %>% head(15)
 ```
 
 
@@ -80,7 +86,7 @@ data_tr_imputed
 
 ### Encoding Categorical Data
 ```{r}
-iris
+iris %>% head(15)
 skim(iris)
 ```
 
@@ -88,13 +94,13 @@ skim(iris)
 iris %>% 
   mutate(Setosa = if_else(Species == "setosa", 1, 0),
          Versicolor = if_else(Species == "versicolor", 1, 0)) %>% 
-  select(-Species)
+  select(-Species) %>% head(15)
 ```
 
 ```{r}
 data_tr_imputed_encoded <- data_tr_imputed %>% 
   mutate(gender = if_else(gender == "masculine", 1, 0))
-data_tr_imputed_encoded
+data_tr_imputed_encoded %>% head(15)
 ```
 
 ### Scaling
@@ -108,7 +114,7 @@ normalize <- function(feature){
 ```{r}
 data_tr_imputed_encoded_normalized <- data_tr_imputed_encoded %>% 
   mutate_all(normalize)
-data_tr_imputed_encoded_normalized
+data_tr_imputed_encoded_normalized %>% head(15)
 ```
 
 
@@ -135,12 +141,9 @@ data_tr_piped <- data_train %>%
   mutate(BMI = mass / (height^2)) %>% 
   mutate(gender = if_else(gender == "masculine", 1, 0)) %>% 
   mutate_all(normalize)
-data_tr_piped
+data_tr_piped %>% head(15)
 ```
-Compare:  
-```{r}
-waldo::compare(data_tr_imputed_encoded_normalized, data_tr_piped)
-```
+
 
 ### Recipes   
 ```{r}
@@ -156,7 +159,11 @@ data_recipe <- data_train %>%
     step_normalize(everything()) %>% 
   prep()
 
-data_recipe %>% juice()
+data_recipe %>% juice() %>% head(15)
 ```
 
 
+### Compare:  
+```{r}
+waldo::compare(data_tr_imputed_encoded_normalized, data_tr_piped)
+```

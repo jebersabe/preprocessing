@@ -7,13 +7,22 @@ knit: (function(input_file, encoding) {
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 author: "Jake Bersabe"
 date: "14/11/2021"
-output: html_document
+output: 
+  html_document:
+    css: "style.css"
+    toc: true
+    toc_float: true
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = F, warning = F, fig.align = "center")
+```
 
 #### Import the data set  
 
 ```{r message=FALSE}
 library(dplyr)
+library(printr)
 data <- readr::read_csv("train.csv")
 glimpse(data)
 ```
@@ -163,67 +172,3 @@ skim(data_train_pipelined)
 ```{r}
 waldo::compare(data_train_pipelined, data_train4)
 ```
-
-
-## Preprocessing 3: recipes()  
-```{r}
-library(recipes)
-
-data_train %>% 
-  recipe() %>% 
-    step_mutate(Credit_History = case_when(
-      Credit_History == 1 ~ "Yes",
-      Credit_History == 0 ~ "No",
-      is.na(Credit_History) ~ "NoHistory")) %>% 
-    step_mutate(Gender = factor(Gender),
-                Married = factor(Married),
-                Education  = factor(Education),
-                Self_Employed = factor(Self_Employed),
-                Property_Area = factor(Property_Area),
-                Credit_History  = factor(Credit_History)) %>% 
-    step_impute_mode(Gender, Married, Self_Employed) %>% 
-    step_impute_median(LoanAmount, Dependents, Loan_Amount_Term) %>% 
-    step_mutate(CombinedIncome = ApplicantIncome + CoapplicantIncome,
-                MonthlyPayment  = LoanAmount*1000/Loan_Amount_Term,
-                PaymentIncomeRatio = MonthlyPayment/CombinedIncome) %>% 
-    step_select(-Loan_ID) %>% 
-    step_dummy(Gender, Married, Education, 
-               Self_Employed, Credit_History, Property_Area) %>% 
-    step_normalize(everything()) %>% 
-  prep()
-```
-
-
-```{r}
-data_train %>% 
-  mutate(Credit_History = case_when(
-    Credit_History == 1 ~ "Yes",
-    Credit_History == 0 ~ "No",
-    is.na(Credit_History) ~ "NoHistory")) %>% 
-  mutate(Gender = if_else(is.na(Gender), "Male", Gender),
-         Married = if_else(is.na(Married), "Yes", Married),
-         Self_Employed = if_else(is.na(Self_Employed), "No", Self_Employed),
-         LoanAmount = if_else(is.na(LoanAmount), median(LoanAmount, na.rm=T), LoanAmount),
-         Dependents = if_else(is.na(Dependents), median(Dependents, na.rm=T), Dependents),
-         Loan_Amount_Term = if_else(is.na(Loan_Amount_Term), median(Loan_Amount_Term, na.rm=T), Loan_Amount_Term),
-         CombinedIncome = ApplicantIncome + CoapplicantIncome,
-         MonthlyPayment  = LoanAmount*1000/Loan_Amount_Term,
-         PaymentIncomeRatio = MonthlyPayment/CombinedIncome) %>% 
-  mutate(Gender = if_else(Gender == "Male", 1, 0),
-         Married = if_else(Married == "Yes", 1, 0),
-         Education = if_else(Education == "Graduate", 1, 0),
-         Self_Employed = if_else(Self_Employed == "Yes", 1, 0),
-         Credit_History_Yes = if_else(Credit_History == "Yes", 1, 0),
-         Credit_History_No = if_else(Credit_History == "No", 1, 0),
-         Credit_History_NA = if_else(Credit_History == "NoHistory", 1, 0),
-         Property_Area_Semi = if_else(Property_Area == "Semiurban", 1, 0),
-         Property_Area_Rural = if_else(Property_Area == "Rural", 1, 0),
-         Property_Area_Urban = if_else(Property_Area == "Urban", 1, 0),
-         Loan_Status = if_else(Loan_Status == "Y", 1, 0)) %>% 
-  select(-Loan_ID, -Credit_History, -Property_Area) %>% 
-  scale() %>% 
-  as_tibble()
-  
-  
-```
-

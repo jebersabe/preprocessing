@@ -171,21 +171,150 @@ pre code {
 </div>
 
 
-<p>Train/Test Split must be done prior to data preprocessing.</p>
-<p>First let us import some libraries:</p>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(tidyr)
-library(skimr)</code></pre>
-<pre class="r"><code>starwars %&gt;% View()
-skim(starwars)</code></pre>
+<div id="import-data" class="section level3">
+<h3>Import data</h3>
+<p>Train/Test Split must be done prior to data preprocessing.<br />
+First let us import some libraries:</p>
+<pre class="r"><code>library(dplyr)
+library(tidyr)
+library(skimr)
+library(printr)</code></pre>
+<pre class="r"><code>starwars %&gt;% head()</code></pre>
+<table style="width:100%;">
+<colgroup>
+<col width="4%" />
+<col width="1%" />
+<col width="1%" />
+<col width="3%" />
+<col width="3%" />
+<col width="2%" />
+<col width="3%" />
+<col width="1%" />
+<col width="2%" />
+<col width="2%" />
+<col width="2%" />
+<col width="47%" />
+<col width="12%" />
+<col width="9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">name</th>
+<th align="right">height</th>
+<th align="right">mass</th>
+<th align="left">hair_color</th>
+<th align="left">skin_color</th>
+<th align="left">eye_color</th>
+<th align="right">birth_year</th>
+<th align="left">sex</th>
+<th align="left">gender</th>
+<th align="left">homeworld</th>
+<th align="left">species</th>
+<th align="left">films</th>
+<th align="left">vehicles</th>
+<th align="left">starships</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Luke Skywalker</td>
+<td align="right">172</td>
+<td align="right">77</td>
+<td align="left">blond</td>
+<td align="left">fair</td>
+<td align="left">blue</td>
+<td align="right">19.0</td>
+<td align="left">male</td>
+<td align="left">masculine</td>
+<td align="left">Tatooine</td>
+<td align="left">Human</td>
+<td align="left">The Empire Strikes Back, Revenge of the Sith , Return of the Jedi , A New Hope , The Force Awakens</td>
+<td align="left">Snowspeeder , Imperial Speeder Bike</td>
+<td align="left">X-wing , Imperial shuttle</td>
+</tr>
+<tr class="even">
+<td align="left">C-3PO</td>
+<td align="right">167</td>
+<td align="right">75</td>
+<td align="left">NA</td>
+<td align="left">gold</td>
+<td align="left">yellow</td>
+<td align="right">112.0</td>
+<td align="left">none</td>
+<td align="left">masculine</td>
+<td align="left">Tatooine</td>
+<td align="left">Droid</td>
+<td align="left">The Empire Strikes Back, Attack of the Clones , The Phantom Menace , Revenge of the Sith , Return of the Jedi , A New Hope</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">R2-D2</td>
+<td align="right">96</td>
+<td align="right">32</td>
+<td align="left">NA</td>
+<td align="left">white, blue</td>
+<td align="left">red</td>
+<td align="right">33.0</td>
+<td align="left">none</td>
+<td align="left">masculine</td>
+<td align="left">Naboo</td>
+<td align="left">Droid</td>
+<td align="left">The Empire Strikes Back, Attack of the Clones , The Phantom Menace , Revenge of the Sith , Return of the Jedi , A New Hope , The Force Awakens</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Darth Vader</td>
+<td align="right">202</td>
+<td align="right">136</td>
+<td align="left">none</td>
+<td align="left">white</td>
+<td align="left">yellow</td>
+<td align="right">41.9</td>
+<td align="left">male</td>
+<td align="left">masculine</td>
+<td align="left">Tatooine</td>
+<td align="left">Human</td>
+<td align="left">The Empire Strikes Back, Revenge of the Sith , Return of the Jedi , A New Hope</td>
+<td align="left"></td>
+<td align="left">TIE Advanced x1</td>
+</tr>
+<tr class="odd">
+<td align="left">Leia Organa</td>
+<td align="right">150</td>
+<td align="right">49</td>
+<td align="left">brown</td>
+<td align="left">light</td>
+<td align="left">brown</td>
+<td align="right">19.0</td>
+<td align="left">female</td>
+<td align="left">feminine</td>
+<td align="left">Alderaan</td>
+<td align="left">Human</td>
+<td align="left">The Empire Strikes Back, Revenge of the Sith , Return of the Jedi , A New Hope , The Force Awakens</td>
+<td align="left">Imperial Speeder Bike</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Owen Lars</td>
+<td align="right">178</td>
+<td align="right">120</td>
+<td align="left">brown, grey</td>
+<td align="left">light</td>
+<td align="left">blue</td>
+<td align="right">52.0</td>
+<td align="left">male</td>
+<td align="left">masculine</td>
+<td align="left">Tatooine</td>
+<td align="left">Human</td>
+<td align="left">Attack of the Clones, Revenge of the Sith , A New Hope</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>skim(starwars)</code></pre>
 <table>
 <caption>Data summary</caption>
 <tbody>
@@ -428,25 +557,98 @@ skim(starwars)</code></pre>
 </table>
 <pre class="r"><code>data &lt;- starwars %&gt;% 
   select(height, mass, gender)
-data</code></pre>
-<pre><code>## # A tibble: 87 x 3
-##    height  mass gender   
-##     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;    
-##  1    172    77 masculine
-##  2    167    75 masculine
-##  3     96    32 masculine
-##  4    202   136 masculine
-##  5    150    49 feminine 
-##  6    178   120 masculine
-##  7    165    75 feminine 
-##  8     97    32 masculine
-##  9    183    84 masculine
-## 10    182    77 masculine
-## # ... with 77 more rows</code></pre>
+data %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">height</th>
+<th align="right">mass</th>
+<th align="left">gender</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">172</td>
+<td align="right">77</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="even">
+<td align="right">167</td>
+<td align="right">75</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="odd">
+<td align="right">96</td>
+<td align="right">32</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="even">
+<td align="right">202</td>
+<td align="right">136</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="odd">
+<td align="right">150</td>
+<td align="right">49</td>
+<td align="left">feminine</td>
+</tr>
+<tr class="even">
+<td align="right">178</td>
+<td align="right">120</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="odd">
+<td align="right">165</td>
+<td align="right">75</td>
+<td align="left">feminine</td>
+</tr>
+<tr class="even">
+<td align="right">97</td>
+<td align="right">32</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="odd">
+<td align="right">183</td>
+<td align="right">84</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="even">
+<td align="right">182</td>
+<td align="right">77</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="odd">
+<td align="right">188</td>
+<td align="right">84</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="even">
+<td align="right">180</td>
+<td align="right">NA</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="odd">
+<td align="right">228</td>
+<td align="right">112</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="even">
+<td align="right">180</td>
+<td align="right">80</td>
+<td align="left">masculine</td>
+</tr>
+<tr class="odd">
+<td align="right">173</td>
+<td align="right">74</td>
+<td align="left">masculine</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="split-data" class="section level3">
 <h3>Split data</h3>
 <pre class="r"><code>library(rsample)
-
+set.seed(123)
 data_split &lt;- initial_split(data)
 
 data_train &lt;- training(data_split)
@@ -454,37 +656,125 @@ data_test &lt;- testing(data_split)</code></pre>
 </div>
 <div id="bmi-column" class="section level3">
 <h3>BMI column</h3>
-<pre class="r"><code>data_train &lt;- data_train %&gt;% 
+<pre class="r"><code>data_train1 &lt;- data_train %&gt;% 
   mutate(height = height/100,
          BMI = mass / (height^2))
-data_train</code></pre>
-<pre><code>## # A tibble: 65 x 4
-##    height  mass gender      BMI
-##     &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
-##  1   2.06    NA masculine  NA  
-##  2   1.65    75 feminine   27.5
-##  3   1.9    113 masculine  31.3
-##  4   1.75    79 masculine  25.8
-##  5   1.65    45 feminine   16.5
-##  6  NA       NA masculine  NA  
-##  7   1.75    80 masculine  26.1
-##  8   1.8     NA masculine  NA  
-##  9   1.91    NA masculine  NA  
-## 10  NA       NA masculine  NA  
-## # ... with 55 more rows</code></pre>
-<pre class="r"><code>colSums(is.na(data_train))</code></pre>
+data_train1 %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">height</th>
+<th align="right">mass</th>
+<th align="left">gender</th>
+<th align="right">BMI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1.93</td>
+<td align="right">89</td>
+<td align="left">masculine</td>
+<td align="right">23.89326</td>
+</tr>
+<tr class="even">
+<td align="right">1.88</td>
+<td align="right">79</td>
+<td align="left">masculine</td>
+<td align="right">22.35174</td>
+</tr>
+<tr class="odd">
+<td align="right">1.71</td>
+<td align="right">NA</td>
+<td align="left">masculine</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1.80</td>
+<td align="right">80</td>
+<td align="left">masculine</td>
+<td align="right">24.69136</td>
+</tr>
+<tr class="odd">
+<td align="right">1.68</td>
+<td align="right">55</td>
+<td align="left">feminine</td>
+<td align="right">19.48696</td>
+</tr>
+<tr class="even">
+<td align="right">1.75</td>
+<td align="right">80</td>
+<td align="left">masculine</td>
+<td align="right">26.12245</td>
+</tr>
+<tr class="odd">
+<td align="right">1.96</td>
+<td align="right">87</td>
+<td align="left">masculine</td>
+<td align="right">22.64681</td>
+</tr>
+<tr class="even">
+<td align="right">1.80</td>
+<td align="right">NA</td>
+<td align="left">masculine</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="left">masculine</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">1.75</td>
+<td align="right">79</td>
+<td align="left">masculine</td>
+<td align="right">25.79592</td>
+</tr>
+<tr class="odd">
+<td align="right">2.29</td>
+<td align="right">88</td>
+<td align="left">masculine</td>
+<td align="right">16.78076</td>
+</tr>
+<tr class="even">
+<td align="right">1.85</td>
+<td align="right">85</td>
+<td align="left">masculine</td>
+<td align="right">24.83565</td>
+</tr>
+<tr class="odd">
+<td align="right">1.83</td>
+<td align="right">84</td>
+<td align="left">masculine</td>
+<td align="right">25.08286</td>
+</tr>
+<tr class="even">
+<td align="right">0.79</td>
+<td align="right">15</td>
+<td align="left">masculine</td>
+<td align="right">24.03461</td>
+</tr>
+<tr class="odd">
+<td align="right">1.80</td>
+<td align="right">83</td>
+<td align="left">masculine</td>
+<td align="right">25.61728</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>colSums(is.na(data_train1))</code></pre>
 <pre><code>## height   mass gender    BMI 
-##      5     20      2     20</code></pre>
+##      4     23      2     23</code></pre>
 </div>
 <div id="dealing-with-missing-values" class="section level3">
 <h3>Dealing with missing values</h3>
-<pre class="r"><code>MedianMassMasculine &lt;- median(data_train[data_train$gender == &quot;masculine&quot;, ]$mass, na.rm = T)
-MedianMassFem &lt;- median(data_train[data_train$gender == &quot;feminine&quot;, ]$mass, na.rm = T)
+<pre class="r"><code>MedianMassMasculine &lt;- median(data_train1[data_train1$gender == &quot;masculine&quot;, ]$mass, na.rm = T)
+MedianMassFem &lt;- median(data_train1[data_train1$gender == &quot;feminine&quot;, ]$mass, na.rm = T)
 
-MeanHeightMas &lt;- mean(data_train[data_train$gender == &quot;masculine&quot;, ]$height, na.rm = T)
-MeanHeightFem &lt;- mean(data_train[data_train$gender == &quot;feminine&quot;, ]$height, na.rm = T)
+MeanHeightMas &lt;- mean(data_train1[data_train1$gender == &quot;masculine&quot;, ]$height, na.rm = T)
+MeanHeightFem &lt;- mean(data_train[data_train1$gender == &quot;feminine&quot;, ]$height, na.rm = T)
 
-data_tr_imputed &lt;- data_train %&gt;% 
+data_tr_imputed &lt;- data_train1 %&gt;% 
   drop_na(gender) %&gt;% 
   mutate(mass = if_else(is.na(mass) &amp; gender == &quot;masculine&quot;, 
                         MedianMassMasculine,
@@ -499,176 +789,231 @@ data_tr_imputed &lt;- data_train %&gt;%
                         MeanHeightFem,
                         height),
          BMI = mass / (height^2)) 
-data_tr_imputed</code></pre>
-<pre><code>## # A tibble: 63 x 4
-##    height  mass gender      BMI
-##     &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
-##  1   2.06    80 masculine  18.9
-##  2   1.65    75 feminine   27.5
-##  3   1.9    113 masculine  31.3
-##  4   1.75    79 masculine  25.8
-##  5   1.65    45 feminine   16.5
-##  6   1.75    80 masculine  26.1
-##  7   1.75    80 masculine  26.1
-##  8   1.8     80 masculine  24.7
-##  9   1.91    80 masculine  21.9
-## 10   1.75    80 masculine  26.1
-## # ... with 53 more rows</code></pre>
+data_tr_imputed %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">height</th>
+<th align="right">mass</th>
+<th align="left">gender</th>
+<th align="right">BMI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1.930000</td>
+<td align="right">89</td>
+<td align="left">masculine</td>
+<td align="right">23.89326</td>
+</tr>
+<tr class="even">
+<td align="right">1.880000</td>
+<td align="right">79</td>
+<td align="left">masculine</td>
+<td align="right">22.35174</td>
+</tr>
+<tr class="odd">
+<td align="right">1.710000</td>
+<td align="right">80</td>
+<td align="left">masculine</td>
+<td align="right">27.35885</td>
+</tr>
+<tr class="even">
+<td align="right">1.800000</td>
+<td align="right">80</td>
+<td align="left">masculine</td>
+<td align="right">24.69136</td>
+</tr>
+<tr class="odd">
+<td align="right">1.680000</td>
+<td align="right">55</td>
+<td align="left">feminine</td>
+<td align="right">19.48696</td>
+</tr>
+<tr class="even">
+<td align="right">1.750000</td>
+<td align="right">80</td>
+<td align="left">masculine</td>
+<td align="right">26.12245</td>
+</tr>
+<tr class="odd">
+<td align="right">1.960000</td>
+<td align="right">87</td>
+<td align="left">masculine</td>
+<td align="right">22.64681</td>
+</tr>
+<tr class="even">
+<td align="right">1.800000</td>
+<td align="right">80</td>
+<td align="left">masculine</td>
+<td align="right">24.69136</td>
+</tr>
+<tr class="odd">
+<td align="right">1.783265</td>
+<td align="right">80</td>
+<td align="left">masculine</td>
+<td align="right">25.15695</td>
+</tr>
+<tr class="even">
+<td align="right">1.750000</td>
+<td align="right">79</td>
+<td align="left">masculine</td>
+<td align="right">25.79592</td>
+</tr>
+<tr class="odd">
+<td align="right">2.290000</td>
+<td align="right">88</td>
+<td align="left">masculine</td>
+<td align="right">16.78076</td>
+</tr>
+<tr class="even">
+<td align="right">1.850000</td>
+<td align="right">85</td>
+<td align="left">masculine</td>
+<td align="right">24.83565</td>
+</tr>
+<tr class="odd">
+<td align="right">1.830000</td>
+<td align="right">84</td>
+<td align="left">masculine</td>
+<td align="right">25.08286</td>
+</tr>
+<tr class="even">
+<td align="right">0.790000</td>
+<td align="right">15</td>
+<td align="left">masculine</td>
+<td align="right">24.03461</td>
+</tr>
+<tr class="odd">
+<td align="right">1.800000</td>
+<td align="right">83</td>
+<td align="left">masculine</td>
+<td align="right">25.61728</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="encoding-categorical-data" class="section level3">
 <h3>Encoding Categorical Data</h3>
-<pre class="r"><code>iris</code></pre>
-<pre><code>##     Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
-## 1            5.1         3.5          1.4         0.2     setosa
-## 2            4.9         3.0          1.4         0.2     setosa
-## 3            4.7         3.2          1.3         0.2     setosa
-## 4            4.6         3.1          1.5         0.2     setosa
-## 5            5.0         3.6          1.4         0.2     setosa
-## 6            5.4         3.9          1.7         0.4     setosa
-## 7            4.6         3.4          1.4         0.3     setosa
-## 8            5.0         3.4          1.5         0.2     setosa
-## 9            4.4         2.9          1.4         0.2     setosa
-## 10           4.9         3.1          1.5         0.1     setosa
-## 11           5.4         3.7          1.5         0.2     setosa
-## 12           4.8         3.4          1.6         0.2     setosa
-## 13           4.8         3.0          1.4         0.1     setosa
-## 14           4.3         3.0          1.1         0.1     setosa
-## 15           5.8         4.0          1.2         0.2     setosa
-## 16           5.7         4.4          1.5         0.4     setosa
-## 17           5.4         3.9          1.3         0.4     setosa
-## 18           5.1         3.5          1.4         0.3     setosa
-## 19           5.7         3.8          1.7         0.3     setosa
-## 20           5.1         3.8          1.5         0.3     setosa
-## 21           5.4         3.4          1.7         0.2     setosa
-## 22           5.1         3.7          1.5         0.4     setosa
-## 23           4.6         3.6          1.0         0.2     setosa
-## 24           5.1         3.3          1.7         0.5     setosa
-## 25           4.8         3.4          1.9         0.2     setosa
-## 26           5.0         3.0          1.6         0.2     setosa
-## 27           5.0         3.4          1.6         0.4     setosa
-## 28           5.2         3.5          1.5         0.2     setosa
-## 29           5.2         3.4          1.4         0.2     setosa
-## 30           4.7         3.2          1.6         0.2     setosa
-## 31           4.8         3.1          1.6         0.2     setosa
-## 32           5.4         3.4          1.5         0.4     setosa
-## 33           5.2         4.1          1.5         0.1     setosa
-## 34           5.5         4.2          1.4         0.2     setosa
-## 35           4.9         3.1          1.5         0.2     setosa
-## 36           5.0         3.2          1.2         0.2     setosa
-## 37           5.5         3.5          1.3         0.2     setosa
-## 38           4.9         3.6          1.4         0.1     setosa
-## 39           4.4         3.0          1.3         0.2     setosa
-## 40           5.1         3.4          1.5         0.2     setosa
-## 41           5.0         3.5          1.3         0.3     setosa
-## 42           4.5         2.3          1.3         0.3     setosa
-## 43           4.4         3.2          1.3         0.2     setosa
-## 44           5.0         3.5          1.6         0.6     setosa
-## 45           5.1         3.8          1.9         0.4     setosa
-## 46           4.8         3.0          1.4         0.3     setosa
-## 47           5.1         3.8          1.6         0.2     setosa
-## 48           4.6         3.2          1.4         0.2     setosa
-## 49           5.3         3.7          1.5         0.2     setosa
-## 50           5.0         3.3          1.4         0.2     setosa
-## 51           7.0         3.2          4.7         1.4 versicolor
-## 52           6.4         3.2          4.5         1.5 versicolor
-## 53           6.9         3.1          4.9         1.5 versicolor
-## 54           5.5         2.3          4.0         1.3 versicolor
-## 55           6.5         2.8          4.6         1.5 versicolor
-## 56           5.7         2.8          4.5         1.3 versicolor
-## 57           6.3         3.3          4.7         1.6 versicolor
-## 58           4.9         2.4          3.3         1.0 versicolor
-## 59           6.6         2.9          4.6         1.3 versicolor
-## 60           5.2         2.7          3.9         1.4 versicolor
-## 61           5.0         2.0          3.5         1.0 versicolor
-## 62           5.9         3.0          4.2         1.5 versicolor
-## 63           6.0         2.2          4.0         1.0 versicolor
-## 64           6.1         2.9          4.7         1.4 versicolor
-## 65           5.6         2.9          3.6         1.3 versicolor
-## 66           6.7         3.1          4.4         1.4 versicolor
-## 67           5.6         3.0          4.5         1.5 versicolor
-## 68           5.8         2.7          4.1         1.0 versicolor
-## 69           6.2         2.2          4.5         1.5 versicolor
-## 70           5.6         2.5          3.9         1.1 versicolor
-## 71           5.9         3.2          4.8         1.8 versicolor
-## 72           6.1         2.8          4.0         1.3 versicolor
-## 73           6.3         2.5          4.9         1.5 versicolor
-## 74           6.1         2.8          4.7         1.2 versicolor
-## 75           6.4         2.9          4.3         1.3 versicolor
-## 76           6.6         3.0          4.4         1.4 versicolor
-## 77           6.8         2.8          4.8         1.4 versicolor
-## 78           6.7         3.0          5.0         1.7 versicolor
-## 79           6.0         2.9          4.5         1.5 versicolor
-## 80           5.7         2.6          3.5         1.0 versicolor
-## 81           5.5         2.4          3.8         1.1 versicolor
-## 82           5.5         2.4          3.7         1.0 versicolor
-## 83           5.8         2.7          3.9         1.2 versicolor
-## 84           6.0         2.7          5.1         1.6 versicolor
-## 85           5.4         3.0          4.5         1.5 versicolor
-## 86           6.0         3.4          4.5         1.6 versicolor
-## 87           6.7         3.1          4.7         1.5 versicolor
-## 88           6.3         2.3          4.4         1.3 versicolor
-## 89           5.6         3.0          4.1         1.3 versicolor
-## 90           5.5         2.5          4.0         1.3 versicolor
-## 91           5.5         2.6          4.4         1.2 versicolor
-## 92           6.1         3.0          4.6         1.4 versicolor
-## 93           5.8         2.6          4.0         1.2 versicolor
-## 94           5.0         2.3          3.3         1.0 versicolor
-## 95           5.6         2.7          4.2         1.3 versicolor
-## 96           5.7         3.0          4.2         1.2 versicolor
-## 97           5.7         2.9          4.2         1.3 versicolor
-## 98           6.2         2.9          4.3         1.3 versicolor
-## 99           5.1         2.5          3.0         1.1 versicolor
-## 100          5.7         2.8          4.1         1.3 versicolor
-## 101          6.3         3.3          6.0         2.5  virginica
-## 102          5.8         2.7          5.1         1.9  virginica
-## 103          7.1         3.0          5.9         2.1  virginica
-## 104          6.3         2.9          5.6         1.8  virginica
-## 105          6.5         3.0          5.8         2.2  virginica
-## 106          7.6         3.0          6.6         2.1  virginica
-## 107          4.9         2.5          4.5         1.7  virginica
-## 108          7.3         2.9          6.3         1.8  virginica
-## 109          6.7         2.5          5.8         1.8  virginica
-## 110          7.2         3.6          6.1         2.5  virginica
-## 111          6.5         3.2          5.1         2.0  virginica
-## 112          6.4         2.7          5.3         1.9  virginica
-## 113          6.8         3.0          5.5         2.1  virginica
-## 114          5.7         2.5          5.0         2.0  virginica
-## 115          5.8         2.8          5.1         2.4  virginica
-## 116          6.4         3.2          5.3         2.3  virginica
-## 117          6.5         3.0          5.5         1.8  virginica
-## 118          7.7         3.8          6.7         2.2  virginica
-## 119          7.7         2.6          6.9         2.3  virginica
-## 120          6.0         2.2          5.0         1.5  virginica
-## 121          6.9         3.2          5.7         2.3  virginica
-## 122          5.6         2.8          4.9         2.0  virginica
-## 123          7.7         2.8          6.7         2.0  virginica
-## 124          6.3         2.7          4.9         1.8  virginica
-## 125          6.7         3.3          5.7         2.1  virginica
-## 126          7.2         3.2          6.0         1.8  virginica
-## 127          6.2         2.8          4.8         1.8  virginica
-## 128          6.1         3.0          4.9         1.8  virginica
-## 129          6.4         2.8          5.6         2.1  virginica
-## 130          7.2         3.0          5.8         1.6  virginica
-## 131          7.4         2.8          6.1         1.9  virginica
-## 132          7.9         3.8          6.4         2.0  virginica
-## 133          6.4         2.8          5.6         2.2  virginica
-## 134          6.3         2.8          5.1         1.5  virginica
-## 135          6.1         2.6          5.6         1.4  virginica
-## 136          7.7         3.0          6.1         2.3  virginica
-## 137          6.3         3.4          5.6         2.4  virginica
-## 138          6.4         3.1          5.5         1.8  virginica
-## 139          6.0         3.0          4.8         1.8  virginica
-## 140          6.9         3.1          5.4         2.1  virginica
-## 141          6.7         3.1          5.6         2.4  virginica
-## 142          6.9         3.1          5.1         2.3  virginica
-## 143          5.8         2.7          5.1         1.9  virginica
-## 144          6.8         3.2          5.9         2.3  virginica
-## 145          6.7         3.3          5.7         2.5  virginica
-## 146          6.7         3.0          5.2         2.3  virginica
-## 147          6.3         2.5          5.0         1.9  virginica
-## 148          6.5         3.0          5.2         2.0  virginica
-## 149          6.2         3.4          5.4         2.3  virginica
-## 150          5.9         3.0          5.1         1.8  virginica</code></pre>
+<pre class="r"><code>iris %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Sepal.Length</th>
+<th align="right">Sepal.Width</th>
+<th align="right">Petal.Length</th>
+<th align="right">Petal.Width</th>
+<th align="left">Species</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">5.1</td>
+<td align="right">3.5</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="even">
+<td align="right">4.9</td>
+<td align="right">3.0</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="odd">
+<td align="right">4.7</td>
+<td align="right">3.2</td>
+<td align="right">1.3</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="even">
+<td align="right">4.6</td>
+<td align="right">3.1</td>
+<td align="right">1.5</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="odd">
+<td align="right">5.0</td>
+<td align="right">3.6</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="even">
+<td align="right">5.4</td>
+<td align="right">3.9</td>
+<td align="right">1.7</td>
+<td align="right">0.4</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="odd">
+<td align="right">4.6</td>
+<td align="right">3.4</td>
+<td align="right">1.4</td>
+<td align="right">0.3</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="even">
+<td align="right">5.0</td>
+<td align="right">3.4</td>
+<td align="right">1.5</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="odd">
+<td align="right">4.4</td>
+<td align="right">2.9</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="even">
+<td align="right">4.9</td>
+<td align="right">3.1</td>
+<td align="right">1.5</td>
+<td align="right">0.1</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="odd">
+<td align="right">5.4</td>
+<td align="right">3.7</td>
+<td align="right">1.5</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="even">
+<td align="right">4.8</td>
+<td align="right">3.4</td>
+<td align="right">1.6</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="odd">
+<td align="right">4.8</td>
+<td align="right">3.0</td>
+<td align="right">1.4</td>
+<td align="right">0.1</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="even">
+<td align="right">4.3</td>
+<td align="right">3.0</td>
+<td align="right">1.1</td>
+<td align="right">0.1</td>
+<td align="left">setosa</td>
+</tr>
+<tr class="odd">
+<td align="right">5.8</td>
+<td align="right">4.0</td>
+<td align="right">1.2</td>
+<td align="right">0.2</td>
+<td align="left">setosa</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>skim(iris)</code></pre>
 <table>
 <caption>Data summary</caption>
@@ -809,175 +1154,246 @@ data_tr_imputed</code></pre>
 <pre class="r"><code>iris %&gt;% 
   mutate(Setosa = if_else(Species == &quot;setosa&quot;, 1, 0),
          Versicolor = if_else(Species == &quot;versicolor&quot;, 1, 0)) %&gt;% 
-  select(-Species)</code></pre>
-<pre><code>##     Sepal.Length Sepal.Width Petal.Length Petal.Width Setosa Versicolor
-## 1            5.1         3.5          1.4         0.2      1          0
-## 2            4.9         3.0          1.4         0.2      1          0
-## 3            4.7         3.2          1.3         0.2      1          0
-## 4            4.6         3.1          1.5         0.2      1          0
-## 5            5.0         3.6          1.4         0.2      1          0
-## 6            5.4         3.9          1.7         0.4      1          0
-## 7            4.6         3.4          1.4         0.3      1          0
-## 8            5.0         3.4          1.5         0.2      1          0
-## 9            4.4         2.9          1.4         0.2      1          0
-## 10           4.9         3.1          1.5         0.1      1          0
-## 11           5.4         3.7          1.5         0.2      1          0
-## 12           4.8         3.4          1.6         0.2      1          0
-## 13           4.8         3.0          1.4         0.1      1          0
-## 14           4.3         3.0          1.1         0.1      1          0
-## 15           5.8         4.0          1.2         0.2      1          0
-## 16           5.7         4.4          1.5         0.4      1          0
-## 17           5.4         3.9          1.3         0.4      1          0
-## 18           5.1         3.5          1.4         0.3      1          0
-## 19           5.7         3.8          1.7         0.3      1          0
-## 20           5.1         3.8          1.5         0.3      1          0
-## 21           5.4         3.4          1.7         0.2      1          0
-## 22           5.1         3.7          1.5         0.4      1          0
-## 23           4.6         3.6          1.0         0.2      1          0
-## 24           5.1         3.3          1.7         0.5      1          0
-## 25           4.8         3.4          1.9         0.2      1          0
-## 26           5.0         3.0          1.6         0.2      1          0
-## 27           5.0         3.4          1.6         0.4      1          0
-## 28           5.2         3.5          1.5         0.2      1          0
-## 29           5.2         3.4          1.4         0.2      1          0
-## 30           4.7         3.2          1.6         0.2      1          0
-## 31           4.8         3.1          1.6         0.2      1          0
-## 32           5.4         3.4          1.5         0.4      1          0
-## 33           5.2         4.1          1.5         0.1      1          0
-## 34           5.5         4.2          1.4         0.2      1          0
-## 35           4.9         3.1          1.5         0.2      1          0
-## 36           5.0         3.2          1.2         0.2      1          0
-## 37           5.5         3.5          1.3         0.2      1          0
-## 38           4.9         3.6          1.4         0.1      1          0
-## 39           4.4         3.0          1.3         0.2      1          0
-## 40           5.1         3.4          1.5         0.2      1          0
-## 41           5.0         3.5          1.3         0.3      1          0
-## 42           4.5         2.3          1.3         0.3      1          0
-## 43           4.4         3.2          1.3         0.2      1          0
-## 44           5.0         3.5          1.6         0.6      1          0
-## 45           5.1         3.8          1.9         0.4      1          0
-## 46           4.8         3.0          1.4         0.3      1          0
-## 47           5.1         3.8          1.6         0.2      1          0
-## 48           4.6         3.2          1.4         0.2      1          0
-## 49           5.3         3.7          1.5         0.2      1          0
-## 50           5.0         3.3          1.4         0.2      1          0
-## 51           7.0         3.2          4.7         1.4      0          1
-## 52           6.4         3.2          4.5         1.5      0          1
-## 53           6.9         3.1          4.9         1.5      0          1
-## 54           5.5         2.3          4.0         1.3      0          1
-## 55           6.5         2.8          4.6         1.5      0          1
-## 56           5.7         2.8          4.5         1.3      0          1
-## 57           6.3         3.3          4.7         1.6      0          1
-## 58           4.9         2.4          3.3         1.0      0          1
-## 59           6.6         2.9          4.6         1.3      0          1
-## 60           5.2         2.7          3.9         1.4      0          1
-## 61           5.0         2.0          3.5         1.0      0          1
-## 62           5.9         3.0          4.2         1.5      0          1
-## 63           6.0         2.2          4.0         1.0      0          1
-## 64           6.1         2.9          4.7         1.4      0          1
-## 65           5.6         2.9          3.6         1.3      0          1
-## 66           6.7         3.1          4.4         1.4      0          1
-## 67           5.6         3.0          4.5         1.5      0          1
-## 68           5.8         2.7          4.1         1.0      0          1
-## 69           6.2         2.2          4.5         1.5      0          1
-## 70           5.6         2.5          3.9         1.1      0          1
-## 71           5.9         3.2          4.8         1.8      0          1
-## 72           6.1         2.8          4.0         1.3      0          1
-## 73           6.3         2.5          4.9         1.5      0          1
-## 74           6.1         2.8          4.7         1.2      0          1
-## 75           6.4         2.9          4.3         1.3      0          1
-## 76           6.6         3.0          4.4         1.4      0          1
-## 77           6.8         2.8          4.8         1.4      0          1
-## 78           6.7         3.0          5.0         1.7      0          1
-## 79           6.0         2.9          4.5         1.5      0          1
-## 80           5.7         2.6          3.5         1.0      0          1
-## 81           5.5         2.4          3.8         1.1      0          1
-## 82           5.5         2.4          3.7         1.0      0          1
-## 83           5.8         2.7          3.9         1.2      0          1
-## 84           6.0         2.7          5.1         1.6      0          1
-## 85           5.4         3.0          4.5         1.5      0          1
-## 86           6.0         3.4          4.5         1.6      0          1
-## 87           6.7         3.1          4.7         1.5      0          1
-## 88           6.3         2.3          4.4         1.3      0          1
-## 89           5.6         3.0          4.1         1.3      0          1
-## 90           5.5         2.5          4.0         1.3      0          1
-## 91           5.5         2.6          4.4         1.2      0          1
-## 92           6.1         3.0          4.6         1.4      0          1
-## 93           5.8         2.6          4.0         1.2      0          1
-## 94           5.0         2.3          3.3         1.0      0          1
-## 95           5.6         2.7          4.2         1.3      0          1
-## 96           5.7         3.0          4.2         1.2      0          1
-## 97           5.7         2.9          4.2         1.3      0          1
-## 98           6.2         2.9          4.3         1.3      0          1
-## 99           5.1         2.5          3.0         1.1      0          1
-## 100          5.7         2.8          4.1         1.3      0          1
-## 101          6.3         3.3          6.0         2.5      0          0
-## 102          5.8         2.7          5.1         1.9      0          0
-## 103          7.1         3.0          5.9         2.1      0          0
-## 104          6.3         2.9          5.6         1.8      0          0
-## 105          6.5         3.0          5.8         2.2      0          0
-## 106          7.6         3.0          6.6         2.1      0          0
-## 107          4.9         2.5          4.5         1.7      0          0
-## 108          7.3         2.9          6.3         1.8      0          0
-## 109          6.7         2.5          5.8         1.8      0          0
-## 110          7.2         3.6          6.1         2.5      0          0
-## 111          6.5         3.2          5.1         2.0      0          0
-## 112          6.4         2.7          5.3         1.9      0          0
-## 113          6.8         3.0          5.5         2.1      0          0
-## 114          5.7         2.5          5.0         2.0      0          0
-## 115          5.8         2.8          5.1         2.4      0          0
-## 116          6.4         3.2          5.3         2.3      0          0
-## 117          6.5         3.0          5.5         1.8      0          0
-## 118          7.7         3.8          6.7         2.2      0          0
-## 119          7.7         2.6          6.9         2.3      0          0
-## 120          6.0         2.2          5.0         1.5      0          0
-## 121          6.9         3.2          5.7         2.3      0          0
-## 122          5.6         2.8          4.9         2.0      0          0
-## 123          7.7         2.8          6.7         2.0      0          0
-## 124          6.3         2.7          4.9         1.8      0          0
-## 125          6.7         3.3          5.7         2.1      0          0
-## 126          7.2         3.2          6.0         1.8      0          0
-## 127          6.2         2.8          4.8         1.8      0          0
-## 128          6.1         3.0          4.9         1.8      0          0
-## 129          6.4         2.8          5.6         2.1      0          0
-## 130          7.2         3.0          5.8         1.6      0          0
-## 131          7.4         2.8          6.1         1.9      0          0
-## 132          7.9         3.8          6.4         2.0      0          0
-## 133          6.4         2.8          5.6         2.2      0          0
-## 134          6.3         2.8          5.1         1.5      0          0
-## 135          6.1         2.6          5.6         1.4      0          0
-## 136          7.7         3.0          6.1         2.3      0          0
-## 137          6.3         3.4          5.6         2.4      0          0
-## 138          6.4         3.1          5.5         1.8      0          0
-## 139          6.0         3.0          4.8         1.8      0          0
-## 140          6.9         3.1          5.4         2.1      0          0
-## 141          6.7         3.1          5.6         2.4      0          0
-## 142          6.9         3.1          5.1         2.3      0          0
-## 143          5.8         2.7          5.1         1.9      0          0
-## 144          6.8         3.2          5.9         2.3      0          0
-## 145          6.7         3.3          5.7         2.5      0          0
-## 146          6.7         3.0          5.2         2.3      0          0
-## 147          6.3         2.5          5.0         1.9      0          0
-## 148          6.5         3.0          5.2         2.0      0          0
-## 149          6.2         3.4          5.4         2.3      0          0
-## 150          5.9         3.0          5.1         1.8      0          0</code></pre>
+  select(-Species) %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Sepal.Length</th>
+<th align="right">Sepal.Width</th>
+<th align="right">Petal.Length</th>
+<th align="right">Petal.Width</th>
+<th align="right">Setosa</th>
+<th align="right">Versicolor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">5.1</td>
+<td align="right">3.5</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">4.9</td>
+<td align="right">3.0</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">4.7</td>
+<td align="right">3.2</td>
+<td align="right">1.3</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">4.6</td>
+<td align="right">3.1</td>
+<td align="right">1.5</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">5.0</td>
+<td align="right">3.6</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">5.4</td>
+<td align="right">3.9</td>
+<td align="right">1.7</td>
+<td align="right">0.4</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">4.6</td>
+<td align="right">3.4</td>
+<td align="right">1.4</td>
+<td align="right">0.3</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">5.0</td>
+<td align="right">3.4</td>
+<td align="right">1.5</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">4.4</td>
+<td align="right">2.9</td>
+<td align="right">1.4</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">4.9</td>
+<td align="right">3.1</td>
+<td align="right">1.5</td>
+<td align="right">0.1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">5.4</td>
+<td align="right">3.7</td>
+<td align="right">1.5</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">4.8</td>
+<td align="right">3.4</td>
+<td align="right">1.6</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">4.8</td>
+<td align="right">3.0</td>
+<td align="right">1.4</td>
+<td align="right">0.1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="right">4.3</td>
+<td align="right">3.0</td>
+<td align="right">1.1</td>
+<td align="right">0.1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="right">5.8</td>
+<td align="right">4.0</td>
+<td align="right">1.2</td>
+<td align="right">0.2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>data_tr_imputed_encoded &lt;- data_tr_imputed %&gt;% 
   mutate(gender = if_else(gender == &quot;masculine&quot;, 1, 0))
-data_tr_imputed_encoded</code></pre>
-<pre><code>## # A tibble: 63 x 4
-##    height  mass gender   BMI
-##     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
-##  1   2.06    80      1  18.9
-##  2   1.65    75      0  27.5
-##  3   1.9    113      1  31.3
-##  4   1.75    79      1  25.8
-##  5   1.65    45      0  16.5
-##  6   1.75    80      1  26.1
-##  7   1.75    80      1  26.1
-##  8   1.8     80      1  24.7
-##  9   1.91    80      1  21.9
-## 10   1.75    80      1  26.1
-## # ... with 53 more rows</code></pre>
+data_tr_imputed_encoded %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">height</th>
+<th align="right">mass</th>
+<th align="right">gender</th>
+<th align="right">BMI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1.930000</td>
+<td align="right">89</td>
+<td align="right">1</td>
+<td align="right">23.89326</td>
+</tr>
+<tr class="even">
+<td align="right">1.880000</td>
+<td align="right">79</td>
+<td align="right">1</td>
+<td align="right">22.35174</td>
+</tr>
+<tr class="odd">
+<td align="right">1.710000</td>
+<td align="right">80</td>
+<td align="right">1</td>
+<td align="right">27.35885</td>
+</tr>
+<tr class="even">
+<td align="right">1.800000</td>
+<td align="right">80</td>
+<td align="right">1</td>
+<td align="right">24.69136</td>
+</tr>
+<tr class="odd">
+<td align="right">1.680000</td>
+<td align="right">55</td>
+<td align="right">0</td>
+<td align="right">19.48696</td>
+</tr>
+<tr class="even">
+<td align="right">1.750000</td>
+<td align="right">80</td>
+<td align="right">1</td>
+<td align="right">26.12245</td>
+</tr>
+<tr class="odd">
+<td align="right">1.960000</td>
+<td align="right">87</td>
+<td align="right">1</td>
+<td align="right">22.64681</td>
+</tr>
+<tr class="even">
+<td align="right">1.800000</td>
+<td align="right">80</td>
+<td align="right">1</td>
+<td align="right">24.69136</td>
+</tr>
+<tr class="odd">
+<td align="right">1.783265</td>
+<td align="right">80</td>
+<td align="right">1</td>
+<td align="right">25.15695</td>
+</tr>
+<tr class="even">
+<td align="right">1.750000</td>
+<td align="right">79</td>
+<td align="right">1</td>
+<td align="right">25.79592</td>
+</tr>
+<tr class="odd">
+<td align="right">2.290000</td>
+<td align="right">88</td>
+<td align="right">1</td>
+<td align="right">16.78076</td>
+</tr>
+<tr class="even">
+<td align="right">1.850000</td>
+<td align="right">85</td>
+<td align="right">1</td>
+<td align="right">24.83565</td>
+</tr>
+<tr class="odd">
+<td align="right">1.830000</td>
+<td align="right">84</td>
+<td align="right">1</td>
+<td align="right">25.08286</td>
+</tr>
+<tr class="even">
+<td align="right">0.790000</td>
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">24.03461</td>
+</tr>
+<tr class="odd">
+<td align="right">1.800000</td>
+<td align="right">83</td>
+<td align="right">1</td>
+<td align="right">25.61728</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="scaling" class="section level3">
 <h3>Scaling</h3>
@@ -986,21 +1402,109 @@ data_tr_imputed_encoded</code></pre>
 }</code></pre>
 <pre class="r"><code>data_tr_imputed_encoded_normalized &lt;- data_tr_imputed_encoded %&gt;% 
   mutate_all(normalize)
-data_tr_imputed_encoded_normalized</code></pre>
-<pre><code>## # A tibble: 63 x 4
-##     height    mass gender      BMI
-##      &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
-##  1  0.866  -0.0815  0.530 -0.241  
-##  2 -0.220  -0.112  -1.86  -0.0775 
-##  3  0.442   0.120   0.530 -0.00719
-##  4  0.0448 -0.0876  0.530 -0.110  
-##  5 -0.220  -0.295  -1.86  -0.284  
-##  6  0.0483 -0.0815  0.530 -0.105  
-##  7  0.0448 -0.0815  0.530 -0.104  
-##  8  0.177  -0.0815  0.530 -0.131  
-##  9  0.469  -0.0815  0.530 -0.183  
-## 10  0.0483 -0.0815  0.530 -0.105  
-## # ... with 53 more rows</code></pre>
+data_tr_imputed_encoded_normalized %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">height</th>
+<th align="right">mass</th>
+<th align="right">gender</th>
+<th align="right">BMI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-0.1171978</td>
+<td align="right">-0.0480801</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1516397</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1196974</td>
+<td align="right">-0.1093720</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1804781</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1281962</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.0868061</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1236969</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1367090</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1296960</td>
+<td align="right">-0.2564726</td>
+<td align="right">-2.1569044</td>
+<td align="right">-0.2340719</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1261965</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1099364</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1156980</td>
+<td align="right">-0.0603385</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1749579</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1236969</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1367090</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1245335</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1279987</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1261965</td>
+<td align="right">-0.1093720</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1160451</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.0992003</td>
+<td align="right">-0.0542093</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.2846989</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1211972</td>
+<td align="right">-0.0725969</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1340097</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1221971</td>
+<td align="right">-0.0787261</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1293848</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1741898</td>
+<td align="right">-0.5016403</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1489953</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1236969</td>
+<td align="right">-0.0848553</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1193869</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="complete-preprocessing-pipeline" class="section level3">
 <h3>Complete Preprocessing Pipeline</h3>
@@ -1022,187 +1526,115 @@ data_tr_imputed_encoded_normalized</code></pre>
   mutate(BMI = mass / (height^2)) %&gt;% 
   mutate(gender = if_else(gender == &quot;masculine&quot;, 1, 0)) %&gt;% 
   mutate_all(normalize)
-data_tr_piped</code></pre>
-<pre><code>## # A tibble: 63 x 4
-##    height    mass gender     BMI
-##     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
-##  1 -0.250 -0.0815  0.530 -0.209 
-##  2 -0.260 -0.112  -1.86  -0.0479
-##  3 -0.254  0.120   0.530  0.0217
-##  4 -0.258 -0.0876  0.530 -0.0804
-##  5 -0.260 -0.295  -1.86  -0.252 
-##  6  3.86  -0.0815  0.530 -0.559 
-##  7 -0.258 -0.0815  0.530 -0.0744
-##  8 -0.257 -0.0815  0.530 -0.101 
-##  9 -0.254 -0.0815  0.530 -0.152 
-## 10  3.86  -0.0815  0.530 -0.559 
-## # ... with 53 more rows</code></pre>
-<p>Compare:</p>
-<pre class="r"><code>waldo::compare(data_tr_imputed_encoded_normalized, data_tr_piped)</code></pre>
-<pre><code>## old vs new
-##                   height          BMI
-## - old[1, ]   0.865875774 -0.240517410
-## + new[1, ]  -0.250476718 -0.209232140
-## - old[2, ]  -0.219997285 -0.077537649
-## + new[2, ]  -0.260208770 -0.047900966
-## - old[3, ]   0.442120434 -0.007187892
-## + new[3, ]  -0.254274592  0.021737182
-## - old[4, ]   0.044849802 -0.110377852
-## + new[4, ]  -0.257835099 -0.080408981
-## - old[5, ]  -0.219997285 -0.284053300
-## + new[5, ]  -0.260208770 -0.252327651
-## - old[6, ]   0.048304329 -0.104987222
-## + new[6, ]   3.857646468 -0.558919289
-## - old[7, ]   0.044849802 -0.104258245
-## + new[7, ]  -0.257835099 -0.074351276
-## - old[8, ]   0.177273346 -0.131078744
-## + new[8, ]  -0.256648263 -0.100900477
-## - old[9, ]   0.468605143 -0.182844724
-## + new[9, ]  -0.254037225 -0.152142830
-## - old[10, ]  0.048304329 -0.104987222
-## + new[10, ]  3.857646468 -0.558919289
-## - old[11, ]  0.124303929  0.115981152
-## + new[11, ] -0.257122997  0.143660335
-## - old[12, ]  0.124303929 -0.256668011
-## + new[12, ] -0.257122997 -0.225219372
-## - old[13, ] -0.140543159 -0.228615877
-## + new[13, ] -0.259496669 -0.197450994
-## - old[14, ]  0.601028686 -0.203545741
-## + new[14, ] -0.252850389 -0.172634450
-## - old[15, ] -0.961569131  0.204992355
-## + new[15, ] -0.266855050  0.231771163
-## - old[16, ] -2.841983454  0.137582822
-## + new[16, ] -0.283708116  0.165043497
-## - old[17, ] -2.020957482  0.043564499
-## + new[17, ] -0.276349735  0.071976197
-## - old[18, ]  1.342600532 -0.287547636
-## + new[18, ] -0.246204110 -0.255786641
-## - old[19, ] -2.259319861 -0.109805719
-## + new[19, ] -0.278486039 -0.079842636
-## - old[20, ] -0.193512577 -0.253768435
-## + new[20, ] -0.259971403 -0.222349126
-## - old[21, ]  0.389151016 -0.174926162
-## + new[21, ] -0.254749326 -0.144304366
-## - old[22, ] -0.087573742 -0.094491226
-## + new[22, ] -0.259021934 -0.064683053
-## - old[23, ]  0.389151016 -0.169623623
-## + new[23, ] -0.254749326 -0.139055464
-## - old[24, ]  0.653998104 -0.106220378
-## + new[24, ] -0.252375655 -0.076293562
-## - old[25, ]  1.475024076 -0.279333539
-## + new[25, ] -0.245017274 -0.247655632
-## - old[26, ]  0.256727472 -0.156199706
-## + new[26, ] -0.255936162 -0.125767334
-## - old[27, ] -2.047442191  0.056912645
-## + new[27, ] -0.276587102  0.085189323
-## - old[28, ]  0.256727472 -0.123741433
-## + new[28, ] -0.255936162 -0.093637385
-## - old[29, ]  0.256727472 -0.146126449
-## + new[29, ] -0.255936162 -0.115795971
-## - old[30, ]  0.048304329 -0.104987222
-## + new[30, ]  3.857646468 -0.558919289
-## - old[31, ] -0.087573742 -0.229376674
-## + new[31, ] -0.259021934 -0.198204095
-## - old[32, ]  0.124303929 -0.268498143
-## + new[32, ] -0.257122997 -0.236929839
-## - old[33, ]  0.389151016 -0.169623623
-## + new[33, ] -0.254749326 -0.139055464
-## - old[34, ]  1.607447620 -0.128340590
-## + new[34, ] -0.243830438 -0.098190021
-## - old[35, ]  0.230242764 -0.158166910
-## + new[35, ] -0.256173529 -0.127714639
-## - old[36, ]  1.448539367 -0.190043867
-## + new[36, ] -0.245254641 -0.159269151
-## - old[37, ]  0.865875774 -0.240517410
-## + new[37, ] -0.250476718 -0.209232140
-## - old[38, ]  0.521574560 -0.352321723
-## + new[38, ] -0.253562491 -0.319905519
-## - old[39, ] -0.008119615 -0.130444821
-## + new[39, ] -0.258309833 -0.100272967
-## - old[40, ]  0.177273346  0.042451769
-## + new[40, ] -0.256648263  0.070874723
-## - old[41, ] -0.061089033 -0.081086574
-## + new[41, ] -0.258784567 -0.051413993
-## - old[42, ] -0.167027868 -0.224228999
-## + new[42, ] -0.259734036 -0.193108490
-## - old[43, ]  0.044849802  7.716599055
-## + new[43, ] -0.257835099  7.667395757
-## - old[44, ]  1.130722862  0.044861915
-## + new[44, ] -0.248103047  0.073260490
-## - old[45, ]  0.521574560 -0.146036155
-## + new[45, ] -0.253562491 -0.115706591
-## - old[46, ]  0.097819220 -0.121241526
-## + new[46, ] -0.257360365 -0.091162766
-## - old[47, ]  0.256727472 -0.151722703
-## + new[47, ] -0.255936162 -0.121335617
-## - old[48, ] -2.497682240 -0.143387055
-## + new[48, ] -0.280622343 -0.113084287
-## - old[49, ]  0.177273346 -0.131078744
-## + new[49, ] -0.256648263 -0.100900477
-## - old[50, ] -0.272966703 -0.205866656
-## + new[50, ] -0.260683504 -0.174931889
-## - old[51, ] -2.100411608  0.360630320
-## + new[51, ] -0.277061836  0.385834805
-## - old[52, ]  0.283212181 -0.317047250
-## + new[52, ] -0.255698795 -0.284987858
-## - old[53, ] -1.623686850  0.003791060
-## + new[53, ] -0.272789228  0.032605078
-## - old[54, ] -0.272966703 -0.135328453
-## + new[54, ] -0.260683504 -0.105107199
-## - old[55, ]  0.468605143 -0.131471967
-## + new[55, ] -0.254037225 -0.101289723
-## - old[56, ]  2.401988883 -0.378706307
-## + new[56, ] -0.236709425 -0.346023215
-## - old[57, ] -0.169065153 -0.223888277
-## + new[57, ]  3.662830773 -0.558931059
-## - old[58, ]  0.309696890 -0.128374591
-## + new[58, ] -0.255461428 -0.098223678
-## - old[59, ]  0.389151016 -0.148413465
-## + new[59, ] -0.254749326 -0.118059853
-## - old[60, ] -0.431874956 -0.175647036
-## + new[60, ] -0.262107707 -0.145017948
-## - old[61, ]  0.177273346 -0.131078744
-## + new[61, ] -0.256648263 -0.100900477
-## - old[62, ] -2.047442191  0.524631605
-## + new[62, ] -0.276587102  0.548177169
-## - old[63, ]  1.051268736 -0.366629518
-## + new[63, ] -0.248815148 -0.334068587
-## 
-##      old$height | new$height                
-##  [1] 0.87       - -0.25      [1]            
-##  [2] -0.22      - -0.26      [2]            
-##  [3] 0.44       - -0.25      [3]            
-##  [4] 0.04       - -0.26      [4]            
-##  [5] -0.22      - -0.26      [5]            
-##  [6] 0.05       - 3.86       [6]            
-##  [7] 0.04       - -0.26      [7]            
-##  [8] 0.18       - -0.26      [8]            
-##  [9] 0.47       - -0.25      [9]            
-## [10] 0.05       - 3.86       [10]           
-##  ... ...          ...        and 53 more ...
-## 
-##      old$BMI | new$BMI                
-##  [1] -0.24   - -0.21   [1]            
-##  [2] -0.08   - -0.05   [2]            
-##  [3] -0.01   - 0.02    [3]            
-##  [4] -0.11   - -0.08   [4]            
-##  [5] -0.28   - -0.25   [5]            
-##  [6] -0.10   - -0.56   [6]            
-##  [7] -0.10   - -0.07   [7]            
-##  [8] -0.13   - -0.10   [8]            
-##  [9] -0.18   - -0.15   [9]            
-## [10] -0.10   - -0.56   [10]           
-##  ... ...       ...     and 53 more ...</code></pre>
+data_tr_piped %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">height</th>
+<th align="right">mass</th>
+<th align="right">gender</th>
+<th align="right">BMI</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-0.1171978</td>
+<td align="right">-0.0480801</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1516397</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1196974</td>
+<td align="right">-0.1093720</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1804781</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1281962</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.0868061</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1236969</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1367090</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1296960</td>
+<td align="right">-0.2564726</td>
+<td align="right">-2.1569044</td>
+<td align="right">-0.2340719</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1261965</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1099364</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1156980</td>
+<td align="right">-0.0603385</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1749579</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1236969</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1367090</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1245335</td>
+<td align="right">-0.1032428</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1279987</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1261965</td>
+<td align="right">-0.1093720</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1160451</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.0992003</td>
+<td align="right">-0.0542093</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.2846989</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1211972</td>
+<td align="right">-0.0725969</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1340097</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1221971</td>
+<td align="right">-0.0787261</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1293848</td>
+</tr>
+<tr class="even">
+<td align="right">-0.1741898</td>
+<td align="right">-0.5016403</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1489953</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1236969</td>
+<td align="right">-0.0848553</td>
+<td align="right">0.4562682</td>
+<td align="right">-0.1193869</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="recipes" class="section level3">
 <h3>Recipes</h3>
-<pre class="r"><code>library(recipes)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;recipes&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:stats&#39;:
-## 
-##     step</code></pre>
-<pre class="r"><code>data_recipe &lt;- data_train %&gt;% 
+<pre class="r"><code>library(recipes)
+
+data_recipe &lt;- data_train %&gt;% 
   recipe() %&gt;% 
     step_mutate(height = height/100) %&gt;% 
     step_naomit(gender) %&gt;% 
@@ -1212,69 +1644,114 @@ data_tr_piped</code></pre>
     step_normalize(everything()) %&gt;% 
   prep()
 
-data_recipe %&gt;% juice()</code></pre>
-<pre><code>## # A tibble: 63 x 4
-##     height    mass     BMI gender_masculine
-##      &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;            &lt;dbl&gt;
-##  1  0.854  -0.101  -0.260             0.530
-##  2 -0.231  -0.125  -0.0936           -1.86 
-##  3  0.430   0.107  -0.0236            0.530
-##  4  0.0332 -0.101  -0.126             0.530
-##  5 -0.231  -0.308  -0.299            -1.86 
-##  6  0.166  -0.101  -0.153             0.530
-##  7  0.0332 -0.0945 -0.120             0.530
-##  8  0.166  -0.101  -0.153             0.530
-##  9  0.457  -0.101  -0.204             0.530
-## 10  0.166  -0.101  -0.153             0.530
-## # ... with 53 more rows</code></pre>
-<pre class="r"><code>waldo::compare(juice(data_recipe), data_tr_imputed_encoded_normalized)</code></pre>
-<pre><code>## `names(old)`: &quot;height&quot; &quot;mass&quot; &quot;BMI&quot;    &quot;gender_masculine&quot;
-## `names(new)`: &quot;height&quot; &quot;mass&quot; &quot;gender&quot; &quot;BMI&quot;             
-## 
-##      old$height | new$height                
-##  [1] 0.854      - 0.866      [1]            
-##  [2] -0.231     - -0.220     [2]            
-##  [3] 0.430      - 0.442      [3]            
-##  [4] 0.033      - 0.045      [4]            
-##  [5] -0.231     - -0.220     [5]            
-##  [6] 0.166      - 0.048      [6]            
-##  [7] 0.033      - 0.045      [7]            
-##  [8] 0.166      - 0.177      [8]            
-##  [9] 0.457      - 0.469      [9]            
-## [10] 0.166      - 0.048      [10]           
-##  ... ...          ...        and 53 more ...
-## 
-##      old$mass | new$mass                
-##  [1] -0.101   - -0.081   [1]            
-##  [2] -0.125   - -0.112   [2]            
-##  [3] 0.107    - 0.120    [3]            
-##  [4] -0.101   - -0.088   [4]            
-##  [5] -0.308   - -0.295   [5]            
-##  [6] -0.101   - -0.081   [6]            
-##  [7] -0.094   - -0.081   [7]            
-##  [8] -0.101   - -0.081   [8]            
-##  [9] -0.101   - -0.081   [9]            
-## [10] -0.101   - -0.081   [10]           
-##  ... ...        ...      and 53 more ...
-## 
-##      old$BMI | new$BMI                
-##  [1] -0.26   - -0.24   [1]            
-##  [2] -0.09   - -0.08   [2]            
-##  [3] -0.02   - -0.01   [3]            
-##  [4] -0.13   - -0.11   [4]            
-##  [5] -0.30   - -0.28   [5]            
-##  [6] -0.15   - -0.10   [6]            
-##  [7] -0.12   - -0.10   [7]            
-##  [8] -0.15   - -0.13   [8]            
-##  [9] -0.20   - -0.18   [9]            
-## [10] -0.15   - -0.10   [10]           
-##  ... ...       ...     and 53 more ...
-## 
-## `old$gender_masculine` is a double vector (0.530263272650478, -1.85592145427667, 0.530263272650478, 0.530263272650478, -1.85592145427667, ...)
-## `new$gender_masculine` is absent
-## 
-## `old$gender` is absent
-## `new$gender` is a double vector (0.530263272650478, -1.85592145427667, 0.530263272650478, 0.530263272650478, -1.85592145427667, ...)</code></pre>
+data_recipe %&gt;% juice() %&gt;% head(15)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">height</th>
+<th align="right">mass</th>
+<th align="right">BMI</th>
+<th align="right">gender_masculine</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.5254243</td>
+<td align="right">-0.0606859</td>
+<td align="right">-0.1746396</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="even">
+<td align="right">0.3744128</td>
+<td align="right">-0.1221325</td>
+<td align="right">-0.2034245</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.1390265</td>
+<td align="right">-0.1221325</td>
+<td align="right">-0.1163122</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="even">
+<td align="right">0.1327943</td>
+<td align="right">-0.1159878</td>
+<td align="right">-0.1597366</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="odd">
+<td align="right">-0.2296334</td>
+<td align="right">-0.2696044</td>
+<td align="right">-0.2569188</td>
+<td align="right">-2.1569044</td>
+</tr>
+<tr class="even">
+<td align="right">-0.0182173</td>
+<td align="right">-0.1159878</td>
+<td align="right">-0.1330137</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="odd">
+<td align="right">0.6160312</td>
+<td align="right">-0.0729752</td>
+<td align="right">-0.1979146</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="even">
+<td align="right">0.1327943</td>
+<td align="right">-0.1221325</td>
+<td align="right">-0.1654999</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="odd">
+<td align="right">0.1327943</td>
+<td align="right">-0.1221325</td>
+<td align="right">-0.1654999</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="even">
+<td align="right">-0.0182173</td>
+<td align="right">-0.1221325</td>
+<td align="right">-0.1391110</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="odd">
+<td align="right">1.6127074</td>
+<td align="right">-0.0668305</td>
+<td align="right">-0.3074520</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="even">
+<td align="right">0.2838058</td>
+<td align="right">-0.0852645</td>
+<td align="right">-0.1570423</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="odd">
+<td align="right">0.2234012</td>
+<td align="right">-0.0914092</td>
+<td align="right">-0.1524260</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="even">
+<td align="right">-2.9176390</td>
+<td align="right">-0.5153909</td>
+<td align="right">-0.1720001</td>
+<td align="right">0.4562682</td>
+</tr>
+<tr class="odd">
+<td align="right">0.1327943</td>
+<td align="right">-0.0975538</td>
+<td align="right">-0.1424467</td>
+<td align="right">0.4562682</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="compare" class="section level3">
+<h3>Compare:</h3>
+<pre class="r"><code>waldo::compare(data_tr_imputed_encoded_normalized, data_tr_piped)</code></pre>
+<pre><code>## v No differences</code></pre>
 </div>
 
 
